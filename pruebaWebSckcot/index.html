@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Disponibilidad de Habitaciones</title>
+</head>
+<body>
+  <h1>Estado de Disponibilidad de Habitaciones</h1>
+  <button id="checkAvailabilityBtn">Revisar Disponibilidad</button>
+  <div id="availabilityResults"></div>
+
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+  <script>
+    const socket = io('http://localhost:3000/room-availability');
+
+    // Referencias al botón y a la sección donde se mostrará el resultado
+    const checkAvailabilityBtn = document.getElementById('checkAvailabilityBtn');
+    const availabilityResults = document.getElementById('availabilityResults');
+
+    // Enviar mensaje para revisar disponibilidad cuando el botón sea presionado
+    checkAvailabilityBtn.addEventListener('click', () => {
+      socket.emit('checkAvailability');
+    });
+
+    // Escuchar las actualizaciones de disponibilidad desde el servidor
+    socket.on('availabilityUpdate', (availability) => {
+      availabilityResults.innerHTML = '';
+
+      // Mostrar el estado de disponibilidad de cada habitación
+      availability.forEach(room => {
+        const roomElement = document.createElement('p');
+        roomElement.textContent = `Habitación ${room.roomId}: ${room.available ? 'Disponible' : 'Ocupada'}`;
+        availabilityResults.appendChild(roomElement);
+      });
+    });
+
+    // Realizar una petición al endpoint de usuarios y mostrar la respuesta en la consola
+    fetch('http://localhost:3000/user')  // Asume que este es el endpoint para obtener los usuarios
+      .then(response => response.json())
+      .then(data => {
+        console.log('Datos de usuarios:', data);
+      })
+      .catch(error => {
+        console.error('Error al obtener los datos de usuarios:', error);
+      });
+  </script>
+</body>
+</html>

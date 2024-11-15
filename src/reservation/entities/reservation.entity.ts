@@ -18,6 +18,9 @@ export class Reservation {
   @Column()
   startTime: Date;
 
+  @Column()
+  endTime: Date;
+
   @ManyToOne(() => Room, (room) => room.reservations, {
     onDelete: 'CASCADE',
     eager: true,
